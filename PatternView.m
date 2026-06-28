@@ -32,16 +32,13 @@
     return pattern;
 }
 
-/* Force a redraw.  Driving it from the window (rather than -[View display] or
-   a manual lockFocus, both of which no-op here because the view reports
-   canDraw=0 when the app is launched from a shell) reliably invokes drawSelf::.
-   The explicit flushWindow pushes the buffered backing store to the screen even
-   when the redraw is triggered from a menu action rather than an event. */
+/* Repaint the view.  Drawing is driven from the window (-[View display] and
+   lockFocus do not reliably draw here); flushWindow pushes the buffered backing
+   store to the screen even for menu-triggered redraws.  We first paint a quick
+   "Loading..." frame and force it out with NXPing -- so a keystroke registers
+   immediately even when the pattern is slow -- then draw the pattern over it. */
 - redraw
 {
-    /* First paint a quick "Loading..." frame and force it to the screen, so a
-       keystroke registers immediately even when the pattern itself is slow to
-       draw; then paint the real pattern over it. */
     loading = 1;
     [[self window] display];
     [[self window] flushWindow];
@@ -62,7 +59,7 @@
     pattern = p;
     sub = 0;
     invert = 0;
-    [(id)[NXApp delegate] setPatternTitle:pattern];
+    [[NXApp delegate] setPatternTitle:pattern];
     [self redraw];
     return self;
 }
@@ -151,7 +148,7 @@
             [self previousSub];
             break;
         case '\033':                /* escape leaves full screen */
-            [(id)[NXApp delegate] exitFullscreen:self];
+            [[NXApp delegate] exitFullscreen:self];
             break;
         default:
             return [super keyDown:theEvent];

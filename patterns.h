@@ -37,9 +37,9 @@ enum {
     PAT_GRAY_RAMP,          /* smooth 0..100% horizontal ramp          */
     PAT_GRAY_STEPS,         /* discrete gray steps (use "sub" for N)   */
     PAT_GRID,               /* convergence grid + border + crosshair   */
-    PAT_CHECKERBOARD,       /* alternating squares (use "invert")      */
-    PAT_STRIPES_V,          /* 1px vertical stripes (use "invert")     */
-    PAT_STRIPES_H,          /* 1px horizontal stripes (use "invert")   */
+    PAT_CHECKERBOARD,       /* alternating squares (sub = cell size)    */
+    PAT_STRIPES_V,          /* vertical stripes (sub = bar width)       */
+    PAT_STRIPES_H,          /* horizontal stripes (sub = bar width)     */
     PAT_CIRCLES,            /* geometry / linearity: circles + grid    */
     PAT_SHARPNESS,          /* fine detail / frequency bursts          */
     PAT_OVERSCAN,           /* nested safe-area markers                */

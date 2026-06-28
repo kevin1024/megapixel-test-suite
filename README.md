@@ -14,14 +14,14 @@ resolution of whatever display is attached and adapt to mono or color.
 Patterns
 -------------------------------------------------------------------------------
   * SMPTE Color Bars (75%)
-  * Color Fields        - solid red/green/blue/white/black/gray (press "s")
+  * Color Fields        - solid red/green/blue/white/black/gray (Up/Down)
   * PLUGE / Black Level - set brightness so the dim bars are just visible
   * Grayscale Ramp      - smooth 0..100%
-  * Gray Steps          - 8 / 16 / 32 discrete steps (press "s")
+  * Gray Steps          - 8 / 16 / 32 discrete steps (Up/Down)
   * Convergence Grid    - lines, border and centre crosshair
-  * Checkerboard        - cell 1 / 2 / 8 / 32 px (press "s"); "i" inverts
-  * Vertical Stripes    - bar 1 / 2 / 3 / 4 px (press "s"); "i" flips phase
-  * Horizontal Stripes  - bar 1 / 2 / 3 / 4 px (press "s"); "i" flips phase
+  * Checkerboard        - cell 1 / 2 / 8 / 32 px (Up/Down); Cmd-I inverts
+  * Vertical Stripes    - bar 1 / 2 / 3 / 4 px (Up/Down); Cmd-I flips phase
+  * Horizontal Stripes  - bar 1 / 2 / 3 / 4 px (Up/Down); Cmd-I flips phase
   * Circles / Geometry  - concentric + corner circles over a faint grid
   * Sharpness           - frequency-burst blocks
   * Overscan Markers    - 2.5% / 5% / 10% insets
@@ -55,26 +55,12 @@ with the bundled Makefile -- no Project Builder required.
     make app        # MegaPixel.app, a double-clickable Workspace application
     make clean
 
-`make app` produces a real application wrapper.  The icon TIFF is embedded in
-the executable's __ICON segment (see below) and copied into the wrapper, so the
-Workspace launches it as a GUI app on a double-click.
+`make app` builds the double-clickable wrapper; it also embeds the icon in the
+executable's __ICON segment, which is what makes the Workspace launch it as an
+application rather than opening it in a shell.
 
 If the link step ever fails, the AppKit shared-library name can differ by
 release; the Makefile uses `-lNeXT_s -lsys_s`.
-
-Why the __ICON segment matters
--------------------------------------------------------------------------------
-The Workspace Manager only treats a Mach-O executable as a launchable GUI
-*application* (rather than a command-line tool that opens in a shell) if it
-carries an __ICON segment.  The Makefile embeds it at link time:
-
-    cc ... -segcreate __ICON __header MegaPixel.iconheader \
-           -segcreate __ICON app MegaPixel.tiff
-
-  * MegaPixel.tiff        the 48x48 application icon
-  * MegaPixel.iconheader  tab-separated map of bundle/exe name -> icon section
-
-Without this the .app shows an icon but double-clicking it does nothing.
 
 Source layout
 -------------------------------------------------------------------------------
@@ -94,16 +80,13 @@ integer coordinates, and a buffered window composites 1:1 to the screen.  The
 PostScript patterns use integer-aligned fills (never stroked lines, which would
 straddle pixels), and drawSelf:: floors the view bounds to whole pixels.
 
-The single-pixel patterns (stripes / checkerboard at "s" -> 1 px) need to be
-both exact AND fast: filling each pixel with PSrectfill issues ~466,000 DPS
-operators at full screen, and a full-screen NXDrawBitmap takes ~15 s (the DPS
-image operator resamples per pixel).  Instead a small tile is rendered once into
-an NXImage, then replicated with fast window-to-window composites: the tile is
-stamped across one full-width strip, and that strip is stamped down the screen
-(two-level tiling, ~iw/tile + ih/tile composites).  The tile is a whole number
-of pattern periods, so the result is seamless and pixel-exact.
+The single-pixel patterns must be both exact and fast.  Filling each pixel
+directly is far too slow at full screen, so a small tile (a whole number of
+pattern periods) is rendered once into an NXImage and the view is tiled with
+fast window-to-window composites; because the offsets are tile multiples, the
+result is seamless and pixel-exact.
 
-For a true pixel-for-pixel test use Full Screen (press "f"): the pattern fills
+For a true pixel-for-pixel test use Full Screen (Command-F): the pattern fills
 the display at native resolution with nothing scaling it in between.  The 1 px
 stripes and 1 px checkerboard are the maximum-frequency resolution tests; if
 they look like flat gray rather than crisp lines, that is the display/cabling,

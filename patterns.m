@@ -3,17 +3,15 @@
  * Copyright (C)2011 Artemio Urbina
  * NeXTSTEP port 2026
  *
- * Procedural pattern drawing using Display PostScript wraps.  This file only
- * depends on the DPS client wraps (PSxxx) plus a couple of math helpers, so it
- * is the most portable part of the program -- it has no AppKit object
- * dependencies beyond the focused view supplied by the caller.
+ * Procedural pattern drawing.  Most patterns are pure Display PostScript (the
+ * PSxxx wraps); the single-pixel patterns also use NXImage / NXDrawBitmap so
+ * they can be filled quickly (see drawTiled).
  */
 
 #import <dpsclient/wraps.h>
 #import <dpsclient/dpsNeXT.h>   /* NX_COPY and the other compositing ops */
 #import <appkit/graphics.h>     /* NXDrawBitmap, NXSetRect */
 #import <appkit/NXImage.h>      /* tile caching + fast composite */
-#import <math.h>
 #import <stdlib.h>
 #import <string.h>
 #import <stdio.h>
@@ -176,23 +174,17 @@ static void drawGrid(float w, float h)
     PSstroke();
 }
 
-/* Fine single-pixel patterns.  Per-pixel PSrectfill would issue ~466,000 DPS
-   operators for a 1px checkerboard (hang); a full-screen NXDrawBitmap is also
-   far too slow (~15 s, the DPS image operator resamples per pixel).  Instead we
-   draw ONE small tile with NXDrawBitmap, then replicate it across the screen by
-   doubling with PScomposite -- a handful of fast window-to-window blits.  All
-   offsets are multiples of the tile (a whole number of pattern periods), so the
-   result is seamless and pixel-exact (1 unit == 1 device pixel).
-   SETPX sets pixel x white in a row packed MSB-first. */
+/* Row helpers for the 1-bit tile built below: bytes per row, and "set pixel x
+   white" in a row packed MSB-first. */
 #define BPR(iw)            (((iw) + 7) >> 3)
 #define SETPX(row, x)      ((row)[(x) >> 3] |= (unsigned char)(0x80 >> ((x) & 7)))
 
-/* Build a small tile NXImage for the pattern (rendered once into its cache),
-   then fill the view by compositing the cached tile across a grid.  Compositing
-   a cached image is a fast window-to-window blit, unlike NXDrawBitmap on the
-   whole screen (the DPS image operator resamples per pixel -- ~15 s).  The tile
-   is a whole number of pattern periods and the grid step equals the tile size,
-   so the result is seamless and pixel-exact (1 unit == 1 device pixel). */
+/* Draw a fine repeating pattern (checkerboard or stripes, cell/bar 1px and up).
+   Filling every pixel directly is far too slow at full screen, so we render one
+   small tile -- a whole number of pattern periods -- into an NXImage, then tile
+   the view with fast window-to-window composites: stamp the tile across one
+   full-width strip, then stamp that strip down the view.  All offsets are tile
+   multiples, so the result is seamless and pixel-exact (1 unit == 1 px). */
 static void drawTiled(int isChecker, int vertical, int unit, int invert,
                       float w, float h)
 {
