@@ -1,7 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
- * Copyright (C)2011 Artemio Urbina
- * NeXTSTEP port 2026
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * Procedural pattern drawing.  Most patterns are pure Display PostScript (the
  * PSxxx wraps); the single-pixel patterns also use NXImage / NXDrawBitmap so
@@ -18,7 +18,7 @@
 #import "patterns.h"
 
 const char *kPatternNames[PAT_COUNT] = {
-    "SMPTE Color Bars (75%)",
+    "SMPTE Color Bars",
     "Color Fields",
     "PLUGE / Black Level",
     "Grayscale Ramp",
@@ -61,17 +61,19 @@ static void label(const char *s, float x, float y, float size, float gray)
 
 /* --------------------------------------------------------------- patterns */
 
-/* 75% SMPTE/EBU color bars: white, yellow, cyan, green, magenta, red, blue. */
-static void drawColorBars(float w, float h)
+/* SMPTE/EBU color bars at the given level (0.75 = 75% bars, 1.00 = 100% bars):
+   white, yellow, cyan, green, magenta, red, blue. */
+static void drawColorBars(float level, float w, float h)
 {
-    static const float bars[7][3] = {
-        {0.75, 0.75, 0.75},   /* white   */
-        {0.75, 0.75, 0.00},   /* yellow  */
-        {0.00, 0.75, 0.75},   /* cyan    */
-        {0.00, 0.75, 0.00},   /* green   */
-        {0.75, 0.00, 0.75},   /* magenta */
-        {0.75, 0.00, 0.00},   /* red     */
-        {0.00, 0.00, 0.75}    /* blue    */
+    /* which channels are lit for each bar; the lit ones are scaled by level. */
+    static const int on[7][3] = {
+        {1, 1, 1},   /* white   */
+        {1, 1, 0},   /* yellow  */
+        {0, 1, 1},   /* cyan    */
+        {0, 1, 0},   /* green   */
+        {1, 0, 1},   /* magenta */
+        {1, 0, 0},   /* red     */
+        {0, 0, 1}    /* blue    */
     };
     float bw = w / 7.0;
     float topY = h * 0.25;          /* leave the lower quarter for refs    */
@@ -81,7 +83,8 @@ static void drawColorBars(float w, float h)
     clearScreen(w, h, 0.0);
 
     for (i = 0; i < 7; i++)
-        fillRect(i * bw, topY, bw + 1.0, topH, bars[i][0], bars[i][1], bars[i][2]);
+        fillRect(i * bw, topY, bw + 1.0, topH,
+                 on[i][0] * level, on[i][1] * level, on[i][2] * level);
 
     /* Lower quarter: a 100% white block, a 0% black block and mid grays so
        the white/black points can be judged next to the saturated bars. */
@@ -397,6 +400,7 @@ void DrawLoadingScreen(const char *name, float w, float h)
 int PatternSubCount(int pattern)
 {
     switch (pattern) {
+        case PAT_SMPTE_BARS:    return 2;                  /* 75% / 100%        */
         case PAT_COLOR_FIELDS:  return 6;
         case PAT_GRAY_STEPS:    return 3;
         case PAT_CHECKERBOARD:  return NUM_CHECK_SIZES;    /* 1 / 2 / 8 / 32 px */
@@ -406,10 +410,23 @@ int PatternSubCount(int pattern)
     }
 }
 
+const char *PatternDisplayName(int pattern, int sub)
+{
+    static char buf[96];
+
+    if (pattern < 0 || pattern >= PAT_COUNT)
+        return "";
+    if (pattern == PAT_SMPTE_BARS) {
+        sprintf(buf, "%s (%d%%)", kPatternNames[pattern], (sub % 2) ? 100 : 75);
+        return buf;
+    }
+    return kPatternNames[pattern];
+}
+
 void DrawPattern(int pattern, int sub, int invert, float w, float h)
 {
     switch (pattern) {
-        case PAT_SMPTE_BARS:   drawColorBars(w, h);                  break;
+        case PAT_SMPTE_BARS:   drawColorBars((sub % 2) ? 1.00 : 0.75, w, h);  break;
         case PAT_COLOR_FIELDS: drawColorFields(sub, w, h);           break;
         case PAT_PLUGE:        drawPluge(invert, w, h);              break;
         case PAT_GRAY_RAMP:    drawGrayRamp(w, h);                   break;

@@ -1,5 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * AppController builds the application menu, the windowed pattern window and a
  * borderless full-screen window, and routes menu / keyboard commands to the
@@ -20,7 +22,7 @@
 - setup;                    /* build menu + windows, call once at startup */
 - appDidInit:sender;        /* app delegate: first draw once run loop is up */
 
-- setPatternTitle:(int)p;   /* reflect the current pattern in the window title */
+- setPatternTitle:(int)p sub:(int)s;   /* reflect pattern + variant in the title */
 
 - selectPattern:sender;     /* menu action; uses [sender tag]            */
 - nextPattern:sender;

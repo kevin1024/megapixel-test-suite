@@ -1,5 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * PatternView implementation.
  */
@@ -59,7 +61,7 @@
     pattern = p;
     sub = 0;
     invert = 0;
-    [[NXApp delegate] setPatternTitle:pattern];
+    [[NXApp delegate] setPatternTitle:pattern sub:sub];
     [self redraw];
     return self;
 }
@@ -79,6 +81,7 @@
     int n = PatternSubCount(pattern);
     if (n > 1) {
         sub = (sub + 1) % n;
+        [[NXApp delegate] setPatternTitle:pattern sub:sub];
         [self redraw];
     }
     return self;
@@ -89,6 +92,7 @@
     int n = PatternSubCount(pattern);
     if (n > 1) {
         sub = (sub - 1 + n) % n;
+        [[NXApp delegate] setPatternTitle:pattern sub:sub];
         [self redraw];
     }
     return self;
@@ -107,7 +111,7 @@
 
     [self getBounds:&b];
     if (loading) {
-        DrawLoadingScreen(kPatternNames[pattern],
+        DrawLoadingScreen(PatternDisplayName(pattern, sub),
                           (float)(int)b.size.width, (float)(int)b.size.height);
         return self;
     }

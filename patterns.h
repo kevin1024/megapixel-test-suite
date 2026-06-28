@@ -1,7 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
- * Copyright (C)2011 Artemio Urbina
- * NeXTSTEP port 2026
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * This file is part of the 240p Test Suite
  *
@@ -31,7 +31,7 @@
 
 /* Keep this list in sync with kPatternNames[] in patterns.m */
 enum {
-    PAT_SMPTE_BARS = 0,     /* 75% color bars                          */
+    PAT_SMPTE_BARS = 0,     /* SMPTE color bars (sub: 75% / 100%)      */
     PAT_COLOR_FIELDS,       /* solid R/G/B/W/black/gray (use "sub")    */
     PAT_PLUGE,              /* black-level / brightness setup          */
     PAT_GRAY_RAMP,          /* smooth 0..100% horizontal ramp          */
@@ -50,6 +50,10 @@ extern const char *kPatternNames[PAT_COUNT];
 
 /* Number of sub-variants for a given pattern (1 == none). */
 int   PatternSubCount(int pattern);
+
+/* Display name including the variant where it matters (e.g. the SMPTE bar
+   level): "SMPTE Color Bars (75%)".  Points to a static buffer. */
+const char *PatternDisplayName(int pattern, int sub);
 
 /* Draw one pattern into the current focused view. */
 void  DrawPattern(int pattern, int sub, int invert, float w, float h);

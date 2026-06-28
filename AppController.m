@@ -1,5 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * AppController implementation.
  */
@@ -277,10 +279,10 @@ static id addLabel(id box, const char *s, float x, float y,
         }
 
         addLabel(box, "MegaPixel Test Suite", 0.0, 140.0, 320.0, 24.0, 18.0, YES, NX_CENTERED);
-        addLabel(box, "Version 1.0",     0.0, 120.0, 320.0, 16.0, 12.0, NO,  NX_CENTERED);
+        addLabel(box, "Version 1.1",     0.0, 120.0, 320.0, 16.0, 12.0, NO,  NX_CENTERED);
         addLabel(box, "NeXTSTEP display calibration", 0.0, 100.0, 320.0, 16.0, 12.0, NO, NX_CENTERED);
-        addLabel(box, "from the 240p Test Suite", 0.0, 78.0, 320.0, 16.0, 12.0, NO, NX_CENTERED);
-        addLabel(box, "Original suite (C) Artemio Urbina", 0.0, 54.0, 320.0, 14.0, 10.0, NO, NX_CENTERED);
+        addLabel(box, "NeXTSTEP port (C) 2026 Kevin McCarthy", 0.0, 78.0, 320.0, 14.0, 10.0, NO, NX_CENTERED);
+        addLabel(box, "240p Test Suite (C) Artemio Urbina", 0.0, 54.0, 320.0, 14.0, 10.0, NO, NX_CENTERED);
         addLabel(box, "Left/Right pattern   Up/Down variant",
                  0.0, 32.0, 320.0, 14.0, 10.0, NO, NX_CENTERED);
         addLabel(box, "Cmd-I invert   Cmd-F full screen   Cmd-Q quit",
@@ -293,13 +295,13 @@ static id addLabel(id box, const char *s, float x, float y,
 
 /* --------------------------------------------------------- menu actions */
 
-- setPatternTitle:(int)p
+- setPatternTitle:(int)p sub:(int)s
 {
-    char title[96];
+    char title[128];
 
     if (p < 0 || p >= PAT_COUNT)
         return self;
-    sprintf(title, "MegaPixel Test Suite - %s", kPatternNames[p]);
+    sprintf(title, "MegaPixel Test Suite - %s", PatternDisplayName(p, s));
     [normalWindow setTitle:title];
     return self;
 }

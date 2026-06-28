@@ -13,7 +13,7 @@ resolution of whatever display is attached and adapt to mono or color.
 
 Patterns
 -------------------------------------------------------------------------------
-  * SMPTE Color Bars (75%)
+  * SMPTE Color Bars    - 75% / 100% (Up/Down)
   * Color Fields        - solid red/green/blue/white/black/gray (Up/Down)
   * PLUGE / Black Level - set brightness so the dim bars are just visible
   * Grayscale Ramp      - smooth 0..100%
@@ -107,4 +107,4 @@ License
 -------------------------------------------------------------------------------
 GPL v2 or later -- see COPYING.  This is a NeXTSTEP port of the 240p Test Suite
 by Artemio Urbina; the original suite is also GPL.  Display calibration patterns
-and concept (C) Artemio Urbina; NeXTSTEP port 2026.
+and concept (C) Artemio Urbina; NeXTSTEP port (C) 2026 Kevin McCarthy.

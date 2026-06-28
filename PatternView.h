@@ -1,5 +1,7 @@
 /*
  * MegaPixel Test Suite (240p Test Suite for NeXTSTEP)
+ * Copyright (C) 2026 Kevin McCarthy   -- NeXTSTEP port
+ * Copyright (C) 2011 Artemio Urbina   -- original 240p Test Suite
  *
  * PatternView is a custom View (NeXTSTEP 3.x AppKit) that fills itself with the
  * currently selected calibration pattern.  Drawing is delegated to patterns.m.
