@@ -1,0 +1,4 @@
+# NeXTSTEP is a Unix system: keep source/Makefile/iconheader as LF, tiff binary,
+# regardless of the repository's global autocrlf setting.
+* text eol=lf
+MegaPixel.tiff binary
