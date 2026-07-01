@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MegaPixel Test Suite — User's Guide</title>
+<style>
+  :root{
+    --ink:#111;
+    --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,Georgia,"Times New Roman",serif;
+  }
+  html{ background:#7d7d7d; }
+  body{ margin:0; color:var(--ink); font-family:var(--serif); -webkit-font-smoothing:antialiased; }
+
+  /* ---- page ---- */
+  .page{
+    width:7.5in; min-height:9.3in; box-sizing:border-box;
+    margin:26px auto; background:#fff; padding:0.7in 0.8in 0.7in;
+    box-shadow:0 3px 16px rgba(0,0,0,.45); position:relative;
+  }
+
+  /* ---- running head ---- */
+  .runhead{ display:flex; justify-content:space-between; align-items:baseline;
+    font-family:var(--sans); font-size:8.5pt; font-weight:700; letter-spacing:.01em; }
+  .runhead + .rule{ margin-top:.35em; }
+  .rule{ border:0; border-top:1px solid #000; margin:0 0 1.5em; }
+
+  h1.section{ font-family:var(--serif); font-weight:400; font-size:23pt; line-height:1.05;
+    margin:.1em 0 1.1em; }
+
+  /* ---- two-column topic (steps | prose) ---- */
+  .topic{ display:grid; grid-template-columns:1.95in 1fr; column-gap:.42in; margin-bottom:1.5em; }
+  .topic.full{ display:block; }
+  .steps{ font-family:var(--sans); font-size:9.5pt; font-weight:700; line-height:1.34; color:#000; }
+  .steps .step{ position:relative; padding-left:1.15em; margin-bottom:.75em; }
+  .steps .step::before{ content:"\25B8"; position:absolute; left:0; top:0; }
+  .steps ol{ margin:0; padding-left:1.2em; }
+  .steps ol li{ margin-bottom:.75em; }
+  .steps .or{ font-family:var(--serif); font-weight:400; font-style:italic; font-size:10.5pt;
+    margin:.15em 0 .6em; }
+  .steps .xref{ font-family:var(--serif); font-weight:400; font-size:9pt; line-height:1.4;
+    margin-top:1.4em; color:#111; }
+
+  .body{ font-size:11pt; line-height:1.46; }
+  .body p{ margin:0 0 .85em; }
+  .body p:last-child{ margin-bottom:0; }
+  .lede{ }
+
+  .callout{ font-style:italic; font-size:9pt; color:#111; }
+
+  /* ---- caution / note ---- */
+  .caution{ border-top:1px solid #000; border-bottom:1px solid #000; padding:.55em 0;
+    margin:1.1em 0; font-size:10pt; line-height:1.4; }
+  .caution b{ font-family:var(--sans); font-size:9.5pt; }
+
+  /* ---- legal fine print (NeXT-ad style) ---- */
+  .fineprint{ font-family:var(--serif); font-size:7.5pt; line-height:1.4; text-align:justify;
+    color:#222; margin-top:2.4em; }
+  .fineprint .star{ margin-bottom:.5em; }
+
+  /* ---- sidebar ---- */
+  .sidebar{ background:#eee; border:1px solid #b9b9b9; padding:.8em 1.1em 1em; margin:1.6em 0 .4em; }
+  .sidebar h3{ font-family:var(--sans); font-size:12pt; font-weight:700; margin:.1em 0 .7em; }
+  .sidebar .cols{ font-size:9.5pt; line-height:1.42; }
+  @media (min-width:0){ .sidebar .cols{ column-count:2; column-gap:1.4em; } }
+  .sidebar .cols p{ margin:0 0 .7em; }
+
+  /* ---- keyboard / reference tables ---- */
+  table.kb{ width:100%; border-collapse:collapse; font-family:var(--sans); font-size:9.5pt; }
+  table.kb caption{ text-align:left; font-weight:700; font-size:12pt; margin-bottom:.5em; }
+  table.kb th{ text-align:left; border-bottom:1.5px solid #000; padding:.45em .4em; font-size:9pt; }
+  table.kb td{ border-bottom:.5px solid #9a9a9a; padding:.55em .4em; vertical-align:top; line-height:1.3; }
+  table.kb td.k{ white-space:nowrap; font-weight:700; }
+  table.kb tr:last-child td{ border-bottom:1.5px solid #000; }
+
+  /* ---- figures ---- */
+  figure{ margin:0 0 .5em; }
+  figcaption{ font-style:italic; font-size:9pt; margin-top:.35em; color:#111; }
+
+  /* NeXT-style window frame */
+  .nxwin{ border:2px solid #000; background:#b3b3b3; box-shadow:2px 2px 0 rgba(0,0,0,.35); }
+  .nxwin .tbar{ display:grid; grid-template-columns:18px 1fr 18px; align-items:center;
+    height:19px; border-bottom:2px solid #000;
+    background:repeating-linear-gradient(#d8d8d8,#d8d8d8 1px,#a9a9a9 1px,#a9a9a9 2px); }
+  .nxwin .tbar .t{ text-align:center; font-family:var(--sans); font-size:8pt; font-weight:700;
+    background:#c9c9c9; margin:0 3px; padding:1px 4px; border:1px solid #000; }
+  .nxwin .tbar .b{ width:12px; height:12px; border:1px solid #000; background:#cfcfcf;
+    margin:0 3px; box-shadow:inset 1px 1px #eee, inset -1px -1px #888; }
+  .nxwin .content{ line-height:0; }
+  .nxwin svg{ display:block; width:100%; height:auto; }
+
+  /* leader-line callout wrapper */
+  .fig-annot{ display:grid; grid-template-columns:1fr; gap:.4em; }
+
+  /* ---- cover ---- */
+  .cover{ width:7.5in; height:9.3in; box-sizing:border-box; margin:26px auto; background:#fff;
+    box-shadow:0 3px 16px rgba(0,0,0,.45); position:relative; padding:0; }
+  .cover .frame{ position:absolute; inset:0; border:26px solid #000; box-sizing:border-box; }
+  .cover .inner{ position:absolute; inset:26px; display:flex; flex-direction:column;
+    align-items:center; text-align:center; padding:0.7in 0.6in; box-sizing:border-box; }
+  .cover .cube{ margin-top:6px; }
+  .cover .ug{ font-family:var(--sans); font-weight:800; font-size:26pt; letter-spacing:.06em;
+    margin:.5em 0 .6em; }
+  .cover .steplist{ font-family:var(--serif); font-style:italic; font-size:12.5pt; line-height:1.7; }
+  .cover .art{ margin:.3in 0 .25in; }
+  .cover img.art{ width:4in; height:auto; display:block; }
+  .cover .logo{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; font-weight:900;
+    font-size:52pt; letter-spacing:-.02em; line-height:.82; margin-top:auto;
+    transform:scaleX(.82); transform-origin:center bottom; }
+  .cover .logo .rule2{ height:4px; background:#000; margin:.12em 0 .12em; }
+  .cover .tag{ font-family:var(--serif); font-style:italic; letter-spacing:.28em; font-size:11pt; }
+
+  /* ---- print ---- */
+  @media print{
+    html{ background:#fff; }
+    .page,.cover{ box-shadow:none; margin:0 auto; page-break-after:always; }
+    .cover{ height:auto; min-height:9.3in; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== COVER ===================== -->
+<section class="cover">
+  <div class="frame"></div>
+  <div class="inner">
+    <div class="ug">USER'S GUIDE</div>
+    <div class="steplist">
+      Step-by-step instructions for:<br>
+      Calibrating your NeXT display<br>
+      Choosing and reading test patterns<br>
+      Setting black level, white balance, and geometry<br>
+      Testing resolution at native size<br>
+      Plus: a complete pattern reference
+    </div>
+
+    <!-- real NeXTstation displaying the color bars (product shot) -->
+    <img class="art" src="images/nextstation-bars.png"
+         alt="A NeXTstation displaying SMPTE color bars, beside the MegaPixel Display Calibration box">
+
+
+    <div class="logo">
+      MEGAPIXEL
+      <div class="rule2"></div>
+    </div>
+    <div class="tag">TEST&nbsp;&nbsp;SUITE&nbsp;&nbsp;FOR&nbsp;&nbsp;NEXTSTEP</div>
+  </div>
+</section>
+
+<!-- ===================== CH 1 ===================== -->
+<section class="page">
+  <div class="runhead"><span>MegaPixel Test Suite</span><span>Chapter 1: Getting Started</span></div>
+  <hr class="rule">
+
+  <h1 class="section">Starting the application</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Double-click <b>MegaPixel.app</b> in the Workspace File Viewer.</div>
+      <div class="or">Or</div>
+      <div class="step">Drag its icon into the application dock, then click it.</div>
+    </div>
+    <div class="body">
+      <p>MegaPixel Test Suite draws the display-calibration patterns of the 240p Test Suite
+      natively on a NeXT screen. When it starts, it opens a single window showing the first
+      pattern &mdash; the SMPTE color bars &mdash; and nothing else. There are no inspectors,
+      palettes, or documents to manage; every pattern is drawn on demand and the whole
+      application is driven from the menu and the keyboard.</p>
+      <p>The window's title always names the pattern you are looking at, so you never have to
+      guess what is on screen.</p>
+    </div>
+  </div>
+
+  <div class="topic full">
+    <figure>
+      <img src="images/pat-smpte-bars.png"
+           alt="The MegaPixel window showing SMPTE color bars, titled SMPTE Color Bars (75%)"
+           style="display:block; width:4.7in; margin:0 auto; border:1px solid #999;">
+      <figcaption style="text-align:center;">The main window, showing the SMPTE color bars. The title bar names the
+      current pattern and, where it matters, the variant.</figcaption>
+    </figure>
+  </div>
+
+  <div class="folio l">4</div>
+</section>
+
+<!-- ===================== CH 1, p2 ===================== -->
+<section class="page">
+  <div class="runhead"><span>Chapter 1: Getting Started</span><span>MegaPixel Test Suite</span></div>
+  <hr class="rule">
+
+  <h1 class="section">Choosing a pattern</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Press the <b>Right arrow</b> key for the next pattern, or <b>Left arrow</b> for the previous one.</div>
+      <div class="step">Press <b>Up</b> or <b>Down</b> to move through a pattern's variants.</div>
+      <div class="or">Or</div>
+      <div class="step">Choose <b>Patterns</b> from the main menu and pick a pattern by name.</div>
+      <div class="xref">For a list of every pattern and what it is for, see &ldquo;The Patterns&rdquo;
+      in the reference at the end of this guide.</div>
+    </div>
+    <div class="body">
+      <p>The suite contains twelve patterns. The arrow keys are the quickest way to move among
+      them: Left and Right step through the patterns in order, and Up and Down cycle the
+      <i>variants</i> of the pattern you are on &mdash; the cell size of the checkerboard, the number
+      of gray steps, or the level of the color bars.</p>
+      <p>Not every pattern has variants. When one does, the window title and the loading screen
+      show which variant is active &mdash; for example, <b>SMPTE&nbsp;Color&nbsp;Bars&nbsp;(100%)</b> or
+      <b>Checkerboard</b> at its one-pixel setting &mdash; so the current state is always visible even
+      when the difference on screen is subtle.</p>
+      <p>The <b>Patterns</b> menu lists the same twelve patterns by name if you would rather point
+      than step. The <b>View</b> menu duplicates Next, Previous, and Variant for the same reason.</p>
+    </div>
+  </div>
+
+  <div class="topic full">
+    <table class="kb">
+      <caption>Keyboard Commands</caption>
+      <thead><tr><th style="width:34%;">Key</th><th>Effect</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Right arrow / Left arrow</td><td>Next pattern / previous pattern</td></tr>
+        <tr><td class="k">Up arrow / Down arrow</td><td>Next variant / previous variant of the current pattern</td></tr>
+        <tr><td class="k">Command-I</td><td>Invert, or toggle the second field, on patterns that support it
+          (checkerboard, the stripes, and PLUGE)</td></tr>
+        <tr><td class="k">Command-F</td><td>Enter or leave full-screen mode</td></tr>
+        <tr><td class="k">Escape</td><td>Leave full-screen mode</td></tr>
+        <tr><td class="k">Command-Q</td><td>Quit MegaPixel Test Suite</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="folio r">5</div>
+</section>
+
+<!-- ===================== CH 2 ===================== -->
+<section class="page">
+  <div class="runhead"><span>MegaPixel Test Suite</span><span>Chapter 2: Calibrating Your Display</span></div>
+  <hr class="rule">
+
+  <h1 class="section">Setting white balance with the color bars</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Select <b>SMPTE Color Bars</b> (it is the first pattern).</div>
+      <div class="step">Press <b>Up</b> to switch between the <b>75%</b> and <b>100%</b> bars.</div>
+      <div class="step">Adjust your monitor's color controls until the gray bars look neutral, with no color tint.</div>
+    </div>
+    <div class="body">
+      <p>The color bars are seven vertical bars &mdash; white, yellow, cyan, green, magenta, red, and
+      blue &mdash; above a strip of reference blocks at 100%, 0%, 50%, and 75% gray. Use them to judge
+      color purity and white balance: on a correctly set-up display the white and gray bars carry
+      no color cast, and the colored bars are clean and fully saturated.</p>
+      <p>The <b>75%</b> bars are the broadcast-standard levels and are the ones to trust for most
+      adjustments. The <b>100%</b> bars drive every lit channel to full and are useful for checking
+      that the display is not clipping or blooming at peak white. The active level is always shown
+      in the window title, so you can tell the two apart even though they look similar.</p>
+    </div>
+  </div>
+
+  <h1 class="section" style="font-size:19pt;">Setting black level with PLUGE</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Select <b>PLUGE / Black Level</b>.</div>
+      <div class="step">Lower brightness until the darkest bar just disappears into the background.</div>
+      <div class="step">Raise brightness until the two brighter near-black bars are just barely visible.</div>
+    </div>
+    <div class="body">
+      <p>PLUGE &mdash; Picture Line-Up Generation Equipment &mdash; places three bars just above black
+      next to a 100% white reference. It sets the display's black level (brightness): when it is
+      right, true black stays black while detail just above black is still visible.</p>
+      <p>Press <b>Command-I</b> to raise the whole field slightly, which makes the near-black steps
+      easier to separate on displays with crushed shadows.</p>
+      <figure style="margin-top:.7em;">
+        <img src="images/pat-pluge.png" alt="The PLUGE pattern" style="width:100%; border:1px solid #999;">
+        <figcaption>Three near-black bars beside a 100% white reference.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="caution">
+    <b>Caution:</b> Set black level in a dimly lit room. Ambient light washes out the near-black
+    bars and leads you to raise brightness too far, lifting black into gray.
+  </div>
+
+  <div class="folio l">6</div>
+</section>
+
+<!-- ===================== CH 2, p2 ===================== -->
+<section class="page">
+  <div class="runhead"><span>Chapter 2: Calibrating Your Display</span><span>MegaPixel Test Suite</span></div>
+  <hr class="rule">
+
+  <h1 class="section">Checking geometry and convergence</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Select <b>Convergence Grid</b> to check alignment and linearity.</div>
+      <div class="step">Select <b>Circles / Geometry</b> to check for stretching.</div>
+    </div>
+    <div class="body">
+      <p>The <b>Convergence Grid</b> draws a regular grid of white lines with a bright border and a
+      centre crosshair. The lines should be straight, evenly spaced, and square to the edges of the
+      screen; on a color CRT the red, green, and blue should sit exactly on top of one another with
+      no colored fringes.</p>
+      <p>The <b>Circles / Geometry</b> pattern draws concentric circles with more circles in the
+      corners. The circles should be round, not egg-shaped, and the same size in the centre and the
+      corners &mdash; if they are not, the display's geometry needs adjustment.</p>
+      <figure style="margin-top:.7em;">
+        <img src="images/pat-grid.png" alt="The convergence grid pattern" style="width:100%; border:1px solid #999;">
+        <figcaption>The convergence grid, with border and centre crosshair.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <h1 class="section">Testing resolution at native size</h1>
+
+  <div class="topic">
+    <div class="steps">
+      <div class="step">Press <b>Command-F</b> to fill the whole display.</div>
+      <div class="step">Select <b>Vertical Stripes</b> or <b>Horizontal Stripes</b>, then press <b>Up</b> to reach the 1-pixel setting.</div>
+      <div class="step">Press <b>Escape</b> to return to the window.</div>
+      <div class="xref">For the complete list of variants for each pattern, see &ldquo;The
+      Patterns&rdquo; in the reference.</div>
+    </div>
+    <div class="body">
+      <p>For a true pixel-for-pixel test, use full-screen mode so that nothing scales the pattern
+      between the drawing and the glass. The <b>1-pixel stripes</b> and the <b>1-pixel
+      checkerboard</b> are the maximum-frequency resolution tests the display can be asked to show.</p>
+      <p>If those single-pixel patterns render as crisp, distinct lines, the display is resolving
+      full detail. If they blur into flat gray, that is the display or the cabling reaching its
+      limit &mdash; not the pattern, which is drawn exactly one device pixel wide.</p>
+      <figure style="margin-top:.7em;">
+        <img src="images/pat-vstripes.png" alt="The vertical stripes pattern" style="width:100%; border:1px solid #999;">
+        <figcaption>Vertical stripes &mdash; at the 1-pixel setting, the maximum-frequency test.</figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <div class="folio r">7</div>
+</section>
+
+<!-- ===================== REFERENCE ===================== -->
+<section class="page">
+  <div class="runhead"><span>MegaPixel Test Suite</span><span>Reference</span></div>
+  <hr class="rule">
+
+  <h1 class="section">The Patterns</h1>
+
+  <div class="topic full">
+    <table class="kb">
+      <thead><tr><th style="width:27%;">Pattern</th><th style="width:45%;">What it's for</th><th>Variants&nbsp;(Up/Down)</th></tr></thead>
+      <tbody>
+        <tr><td class="k">SMPTE Color Bars</td><td>Color purity and white balance</td><td>75% / 100%</td></tr>
+        <tr><td class="k">Color Fields</td><td>Screen purity and uniformity on a solid field</td><td>Red, green, blue, white, black, 50% gray</td></tr>
+        <tr><td class="k">PLUGE / Black Level</td><td>Setting brightness / black level</td><td>Command-I lifts the field</td></tr>
+        <tr><td class="k">Grayscale Ramp</td><td>Smooth 0&ndash;100% gradient for banding</td><td>&mdash;</td></tr>
+        <tr><td class="k">Gray Steps</td><td>Discrete steps for gamma and contrast</td><td>8 / 16 / 32 steps</td></tr>
+        <tr><td class="k">Convergence Grid</td><td>Alignment, linearity, and convergence</td><td>&mdash;</td></tr>
+        <tr><td class="k">Checkerboard</td><td>Sharpness and pixel response</td><td>1 / 2 / 8 / 32 px cells; Command-I inverts</td></tr>
+        <tr><td class="k">Vertical Stripes</td><td>Horizontal resolution (max frequency at 1 px)</td><td>1 / 2 / 3 / 4 px; Command-I flips phase</td></tr>
+        <tr><td class="k">Horizontal Stripes</td><td>Vertical resolution (max frequency at 1 px)</td><td>1 / 2 / 3 / 4 px; Command-I flips phase</td></tr>
+        <tr><td class="k">Circles / Geometry</td><td>Geometry: circles should stay round</td><td>&mdash;</td></tr>
+        <tr><td class="k">Sharpness</td><td>Frequency-burst blocks for edge ringing</td><td>&mdash;</td></tr>
+        <tr><td class="k">Overscan Markers</td><td>Nested safe-area markers</td><td>2.5% / 5% / 10% insets</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="topic full" style="margin-top:1.6em;">
+    <table class="kb">
+      <caption>Menu Summary</caption>
+      <thead><tr><th style="width:27%;">Menu</th><th>Contents</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Info</td><td>Info Panel &mdash; application name, version, and credits</td></tr>
+        <tr><td class="k">Patterns</td><td>Every pattern by name</td></tr>
+        <tr><td class="k">View</td><td>Next Pattern, Previous Pattern, Next Variant, Invert, Enter Full Screen</td></tr>
+        <tr><td class="k">Windows</td><td>Arrange in Front, Miniaturize Window, Close Window</td></tr>
+        <tr><td class="k">Services</td><td>Standard NeXTSTEP Services</td></tr>
+        <tr><td class="k">Hide / Quit</td><td>Hide the application; quit</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="fineprint">
+    <p>&copy; 2026 Kevin McCarthy. All rights reserved. MegaPixel Test Suite is a NeXTSTEP port of the
+    240p Test Suite; the original suite, its calibration patterns, and concept are &copy; Artemio Urbina.
+    NeXT, NeXTSTEP, and NeXTstation are trademarks of NeXT Software, Inc. Display PostScript is a
+    trademark of Adobe Systems, Inc. All other trademarks belong to their respective owners. MegaPixel
+    Test Suite is free software distributed under the terms of the GNU General Public License, version 2
+    or later; see the file COPYING for details. Version 1.1.</p>
+  </div>
+
+  <div class="folio l">8</div>
+</section>
+
+</body>
+</html>
