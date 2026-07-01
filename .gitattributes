@@ -2,3 +2,11 @@
 # regardless of the repository's global autocrlf setting.
 * text eol=lf
 MegaPixel.tiff binary
+
+# Image binaries must never get line-ending conversion.
+*.png  binary
+*.tiff binary
+*.tif  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
